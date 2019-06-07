@@ -45,7 +45,7 @@ until dig -t txt ${txtName} | grep ${txtValue} 2>&1 > /dev/null; do
   fi
 done
 '
-echo "Sleeping for 1 minute to give DNS time to propogate."
+echo "Sleeping for 1 minute to give DNS time to propagate."
 sleep 60
 # cleanup
 rm /tmp/dnsExit*.*
