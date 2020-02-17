@@ -23,6 +23,15 @@ clean_challenge)
   export CERTBOT_VALIDATION=$dnstoken
   cleanup.sh
   ;;
+deploy_cert)
+  dnsexit-deploy-hook.sh
+  ;;
+invalid_challenge)
+    echo "The challenge was invalid."
+  ;;
+request_failure)
+    echo "The request failed."
+  ;;
 *)
   echo ""
   ;;
