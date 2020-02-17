@@ -8,10 +8,11 @@ function getDnsExitDomain () {
   local certbotDomain=$2
   local domainListPage=$3
 
-  # get comma separated list of domains in dnseExit
-  grepCommand="grep -Pzo <a.class=\"alink\".href=\"(.*?)\".title=\"Domain.Panel\".>\K(.*?)</a> $domainListPage"
-  domains=`${grepCommand}`
-  domains="${domains//"</a>"/,}"
+  # get comma separated list of domains in DNSexit
+  # pup finds the spans and prints out the contents as text
+  # sed strips the whitespace
+  # awk converts the multiple lines of text into one line of CSV.
+  domains=$(pup "span.dmsect text{}" -f $domainListPage | sed 's/^[ \t]*//' | awk -v RS='' '{gsub("\n",","); print}')
 
   # convert dnsExit domain list to map
   declare -A dnsExitDomainMap
