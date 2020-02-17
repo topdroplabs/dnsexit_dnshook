@@ -1,5 +1,6 @@
 #!/bin/bash -e
-
+PS4=':${LINENO}+'
+#set -x
 # load config
 . "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/config.sh"
 . "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/base.sh"

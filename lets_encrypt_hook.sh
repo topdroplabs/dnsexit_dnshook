@@ -1,5 +1,7 @@
 #!/bin/bash
+PS4=':${LINENO}+'
 #set -x
+
 # Hook script to work with https://github.com/lukas2511/dehydrated
 
 operation=$1
