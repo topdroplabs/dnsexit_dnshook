@@ -41,7 +41,6 @@ function getDnsExitDomain () {
       fi
       if [[ ${dnsExitDomainMap["$dnsExitMatchingDomain"]} ]]; then
         dnsExitMatchingDomainFound=true
-#        break;
       fi
   done
 
