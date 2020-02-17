@@ -1,4 +1,4 @@
- #!/bin/bash
+#!/bin/bash
 PS4=':${LINENO}+'
 #set -x
 
