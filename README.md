@@ -23,7 +23,8 @@ It needs the following programs:
 **How to use it**
 
 - Place the files so that they are in your $PATH
-- Update `config.sh` with your dnsexit.com login credentials
+- Copy `config-example.sh` to `config.sh` and enter your dnsexit.com login credentials
+   - Optionally also add a DNS server to use. Useful if you are in a network where the wildcard domain is being routed internally and DNS queries for the wildcard domain would never make it outside the LAN.
 - In the dehydrated `config` file set a minimal of:
   - `CHALLENGETYPE="dns-01"`
   - `HOOK="lets_encrypt_hook.sh"`

@@ -34,8 +34,7 @@ curl -s -D - -X GET -c ${cookiesFile} -b ${cookiesFile} "https://www.dnsexit.com
 # check that dns change was applied
 timer=0
 count=0
-: '
-until dig -t txt ${txtName} | grep ${txtValue} 2>&1 > /dev/null; do
+until dig ${dnsserver} -t txt ${txtName} | grep ${txtValue} 2>&1 > /dev/null; do
   if [[ "$timer" -ge 300 ]]; then
     echo "error: txt record was not added"
     exit 1
@@ -45,9 +44,6 @@ until dig -t txt ${txtName} | grep ${txtValue} 2>&1 > /dev/null; do
     sleep 15
   fi
 done
-'
-echo "Sleeping for 1 minute to give DNS time to propagate."
-sleep 60
 # cleanup
 rm /tmp/dnsExit*.*
 exit 0
