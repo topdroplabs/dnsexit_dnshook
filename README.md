@@ -39,4 +39,10 @@ It needs the following programs:
 - Call the dehydrated command using the required parameters. ie.
   - `dehydrated --force --cron --domain "dev.example.com *.dev.example.com"
 
+**How to test it**
+
+- There are two test script that will ask for your DNSExit credentials that will call the main scripts:
+  - testAuthenticator.sh
+  - testCleanup.sh
+
 I hope this script is useful for the community, if you have any comments or suggestions contact me
