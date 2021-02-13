@@ -47,11 +47,15 @@ function getDnsExitDomain () {
   local certbotDomain=$2
   local domainListPage=$3
 
-  # get comma separated list of domains in DNSexit
-  # pup finds the spans and prints out the contents as text
-  # sed strips the whitespace
-  # awk converts the multiple lines of text into one line of CSV.
-  domains=$(pup "span.dmsect text{}" -f $domainListPage | sed 's/^[ \t]*//' | awk -v RS='' '{gsub("\n",","); print}')
+  # get comma separated list of domains in dnseExit
+  regex="href=\'/DomainPanel.sv\\?domainname=\K(.*?)'"
+  grepCommand="grep -Po ${regex} ${domainListPage}"
+
+  # remove quotes, carry returns and the last character
+  domains=`${grepCommand}`
+  domains="${domains//"'"/,}"
+  domains="${domains//$'\n'/}"
+  domains="${domains%?}"
 
   # convert dnsExit domain list to map
   declare -A dnsExitDomainMap
@@ -61,20 +65,30 @@ function getDnsExitDomain () {
     dnsExitDomainMap[$domain]=1
   done
 
-  # create array of certbotDomain elements
-  declare -a certbotDomainArray
-  IFS="."
-  for certbotDomainElement in ${certbotDomain}
-  do
-    certbotDomainArray+=(${certbotDomainElement})
-  done
+  # try to match the dnsExit domain with the certbot domain using exact match
+  unset dnsExitMatchingDomain
+  if [ ! -z ${dnsExitDomainMap[$certbotDomain]:-} ]; then
+    dnsExitMatchingDomain="$certbotDomain"
+  fi
 
-  # get dnsExit matching domain for certbotDomain
-  IFS=","
-  dnsExitMatchingDomain=""
-  dnsExitMatchingDomainFound=false
-  certbotDomainArrayMaxIndex=$((${#certbotDomainArray[@]}-1))
-  for (( idx=${certbotDomainArrayMaxIndex} ; idx>=0 ; idx-- )) ; do
+  # if we were unable to match the domain using exact match then try to match with its variants (for subdomains)
+  # example: for certbot domain "test1.test2.myDomain.com" it will try to match it with dnsExit domains: test2.myDomain.com and myDomain.com
+  if [ -z ${dnsExitMatchingDomain} ]; then
+
+    # split the certbot domain using dots and create an array of the elements
+    # example: test.myDomain.com -> [test,myDomain,com]
+    declare -a certbotDomainArray
+    IFS="."
+    for certbotDomainElement in ${certbotDomain}
+    do
+      certbotDomainArray+=(${certbotDomainElement})
+    done
+
+    IFS=","
+    dnsExitMatchingDomain=""
+    dnsExitMatchingDomainFound=false
+    certbotDomainArrayMaxIndex=$((${#certbotDomainArray[@]}-1))
+    for (( idx=${certbotDomainArrayMaxIndex} ; idx>=0 ; idx-- )) ; do
       if [[ $idx != $certbotDomainArrayMaxIndex ]]; then
         dnsExitMatchingDomain="${certbotDomainArray[idx]}.${dnsExitMatchingDomain}"
       else
@@ -82,14 +96,17 @@ function getDnsExitDomain () {
       fi
       if [[ ${dnsExitDomainMap["$dnsExitMatchingDomain"]} ]]; then
         dnsExitMatchingDomainFound=true
+        break;
       fi
-  done
+    done
+  fi
 
   if [[ ${dnsExitMatchingDomainFound} == false ]]; then
     echo "no matching domain found in dnsExit for: certbotDomain"
     dnsExitMatchingDomain="" 
   fi
 
+  unset IFS
   eval $resultVar="'${dnsExitMatchingDomain}'"
 
 }
